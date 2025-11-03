@@ -9,8 +9,7 @@
 #define Encoder_Turn2							 	0x02
 
 void Encoder_Init(void);
-void Encoder_Tick(void);
-uint8_t Encoder_Check(uint8_t Flag);
+int16_t Encoder_Get(void);
 
 
 
