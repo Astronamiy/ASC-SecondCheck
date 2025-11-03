@@ -3,7 +3,6 @@
 void PWM_Init(void)
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 ,ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 ,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
 	
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -29,18 +28,10 @@ void PWM_Init(void)
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	TIM_OCInitStructure.TIM_Pulse = 0;		//CCR
+	TIM_OC3Init(TIM2 ,&TIM_OCInitStructure);
 	TIM_OC4Init(TIM2 ,&TIM_OCInitStructure);
-	
-	TIM_OCInitTypeDef TIM_OCInitStructure1;
-	TIM_OCStructInit(&TIM_OCInitStructure1);
-	TIM_OCInitStructure1.TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OCInitStructure1.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OCInitStructure1.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OCInitStructure1.TIM_Pulse = 0;		//CCR
-	TIM_OC4Init(TIM3 ,&TIM_OCInitStructure1);
 
 	TIM_Cmd(TIM2 ,ENABLE);
-	TIM_Cmd(TIM3 ,ENABLE);
 }
 
 void PWM_SetCompare3(uint16_t Compare)
@@ -51,9 +42,13 @@ void PWM_SetCompare3(uint16_t Compare)
 
 void PWM_SetCompare4(uint16_t Compare)
 {
-	TIM_SetCompare4(TIM3 ,Compare);
+	TIM_SetCompare4(TIM2 ,Compare);
 }
 
+void PWM_SetPrescaler(uint16_t Prescaler)
+{
+	TIM_PrescalerConfig(TIM2 ,Prescaler ,TIM_PSCReloadMode_Update);
+}
 
 
 
