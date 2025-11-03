@@ -1,18 +1,30 @@
 #include "stm32f10x.h"                  // Device header
+#include "Motor.h"
+#include "Encoder.h"
+#include "OLED.h"
+#include "Timer.h"
+
+int Speed;
 
 int main()
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA ,ENABLE);
-	
-	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA ,&GPIO_InitStructure);
-	
+	Motor_Init();
+	Encoder_Init();
+	OLED_Init();
+	Timer_Init();
+	Motor_SetSpeed1(-0);
+	Motor_SetSpeed2(-20);
 	while(1)
 	{
-		GPIO_ResetBits(GPIOA ,GPIO_Pin_0);
+		OLED_ShowSignedNum(1 ,1 ,Speed ,5);
 	}
 }
-	
+
+void TIM2_IRQHandler(void)
+	{
+		if (TIM_GetITStatus(TIM2 ,TIM_IT_Update) == SET)
+		{
+			Speed = Encoder_Get();
+			TIM_ClearITPendingBit(TIM2 ,TIM_IT_Update);
+		}
+	}
