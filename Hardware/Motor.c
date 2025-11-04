@@ -45,3 +45,4 @@ void Motor_SetSpeed1(int8_t speed)
 		PWM_SetCompare3(-speed);
 	}
 }
+
