@@ -6,11 +6,15 @@
 #include "Delay.h"
 #include "Serial.h"
 
+uint8_t RxData;
+
 int main()
 {
 	while(1)
 	{
-		
+		if(Serial_GetRxFlag() == 1)
+		{
+		}
 	}
 }
 
