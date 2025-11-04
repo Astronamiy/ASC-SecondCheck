@@ -1,7 +1,8 @@
 #include "stm32f10x.h"                  // Device header
 //#include <stdio.h>
 
-uint8_t Serial_RxData;
+uint8_t Serial_TxPacket[4];
+char Serial_RxPacket[100];
 uint8_t Serial_RxFlag;
 
 void Serial_Init(void)
@@ -92,6 +93,13 @@ void Serial_SendNumber(uint32_t Number ,uint8_t Length)
 //	return ch;
 //}
 
+void Serial_SendPacket(void)
+{
+	Serial_SendByte(0xFF);
+	Serial_SendArray(Serial_TxPacket ,4);
+	Serial_SendByte(0xFF);
+}
+
 uint8_t Serial_GetRxFlag(void)
 {
 	if(Serial_RxFlag == 1)
@@ -102,17 +110,44 @@ uint8_t Serial_GetRxFlag(void)
 	return 0;
 }
 
-uint8_t Serial_GetRxData(void)
-{
-	return Serial_RxData;
-}
-
 void USART1_IRQHandler(void)
 {
+	static uint8_t RxState = 0;
+	static uint8_t pRxPacket = 0;
 	if(USART_GetITStatus(USART1 ,USART_IT_RXNE) == SET)
 	{
-		Serial_RxData = USART_ReceiveData(USART1);
-		Serial_RxFlag = 1;
+		uint8_t RxData = USART_ReceiveData(USART1);
+		
+		switch (RxState)
+		{
+			case 0:
+				if(RxData == '@')
+				{
+					pRxPacket = 0;
+					RxState = 1;
+				}
+				break;
+			case 1:
+				Serial_RxPacket[pRxPacket] = RxData;
+				if(RxData == '\r')
+				{
+					RxState = 2;
+				}
+				else
+				{
+					Serial_RxPacket[pRxPacket] = RxData;
+					pRxPacket ++;
+				}
+				break;
+			case 2:
+				if(RxData == '\n')
+				{
+					RxState = 0;
+					Serial_RxFlag = 1;
+					Serial_RxPacket[pRxPacket] = '\0';
+				}
+				break;
+		}
 		USART_ClearITPendingBit(USART1 ,USART_IT_RXNE);
 	}
 }
