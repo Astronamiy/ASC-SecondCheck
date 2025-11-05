@@ -19,7 +19,6 @@ void IC_Init(void)
 	TIM_TimeBaseInitStructure.TIM_Period = 65536 - 1;		//ARR
 	TIM_TimeBaseInitStructure.TIM_Prescaler = 72 - 1;		//PSC
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInit(TIM2 ,&TIM_TimeBaseInitStructure);
 	TIM_TimeBaseInit(TIM3 ,&TIM_TimeBaseInitStructure);
 	
 	TIM_ICInitTypeDef TIM_ICInitStructure;
